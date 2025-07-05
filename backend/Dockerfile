@@ -1,18 +1,8 @@
-FROM node:18-slim
-
-# Set working directory
+FROM node:18
 WORKDIR /app
-
-# Copy package files and install dependencies
-COPY . .
+COPY package*.json ./
 RUN npm install
-
-# Build TypeScript to JavaScript
-RUN npm run build
-
-# Expose the application port
+COPY . .
 EXPOSE 5000
-
-# Start the application
-CMD ["node", "dist/index.js"]
+CMD ["npm", "start"]
 
