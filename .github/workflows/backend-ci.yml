@@ -1,0 +1,40 @@
+name: Backend CI
+
+on:
+  #push:
+    #branches:
+      #- main
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: 🧾 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔐 Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.ACCESS_KEYS}}
+          aws-secret-access-key: ${{ secrets.SECRET_KEYS }}
+          aws-region: eu-central-1
+
+      - name: 🐳 Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: 📦 Build and Push Docker image to ECR
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: backend/Dockerfile
+          push: true
+          tags: 629490206392.dkr.ecr.eu-central-1.amazonaws.com/demo/backend/backend:latest
