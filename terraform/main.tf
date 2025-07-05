@@ -1,7 +1,7 @@
 module "vpc" {
-  source         = "./modules/VPC"
-  vpc_name       = var.vpc_name
-  vpc_cidr_block = var.vpc_cidr_block
+  source               = "./modules/VPC"
+  vpc_name             = var.vpc_name
+  vpc_cidr_block       = var.vpc_cidr_block
   private_cidr_block_1 = var.private_cidr_block_1
   private_cidr_block_2 = var.private_cidr_block_2
   public_cidr_block_1  = var.public_cidr_block_1
@@ -14,23 +14,26 @@ module "security_group" {
 }
 
 module "iam" {
-  source = "./modules/IAM"
+  source              = "./modules/IAM"
   cluster_role_name   = var.cluster_role_name
   nodegroup_role_name = var.nodegroup_role_name
 }
 
 module "eks" {
-  source = "./modules/EKS"
-  cluster_name          = var.cluster_name
-  kubernetes_version    = var.kubernetes_version
-  public_subnet_ids     = module.vpc.public_subnet_ids
-  cluster_role_arn      = module.iam.cluster_role_arn
-  security_group_id_eks = [module.security_group.security_group_id_eks]
-  node_group_name       = var.node_group_name
-  node_role_arn         = module.iam.nodegroup_role_arn
-  node_desired_size     = var.node_desired_size
-  node_min_size         = var.node_min_size
-  node_max_size         = var.node_max_size
+  source                         = "./modules/EKS"
+  cluster_name                   = var.cluster_name
+  kubernetes_version             = var.kubernetes_version
+  public_subnet_ids              = module.vpc.public_subnet_ids
+  cluster_role_arn               = module.iam.cluster_role_arn
+  security_group_id_eks          = [module.security_group.security_group_id_eks]
+  node_group_name                = var.node_group_name
+  node_role_arn                  = module.iam.nodegroup_role_arn
+  node_desired_size              = var.node_desired_size
+  node_min_size                  = var.node_min_size
+  node_max_size                  = var.node_max_size
+  node_instance_type             = var.node_instance_type
+  fargate_pod_execution_role_arn = module.iam.fargate_pod_execution.arn
+  fargate_namespace              = "demo"
 }
 
 module "ec2" {

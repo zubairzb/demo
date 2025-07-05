@@ -13,7 +13,8 @@ node_group_name     = "demo-NodeGroup"
 node_desired_size   = 1
 node_min_size       = 1
 node_max_size       = 1
+node_instance_type  = "t2.micro"
 
-instance_type       = "t2.nano"
-ami                 = "ami-01be94ae58414ab2e"
-key_pair_name       = "ec2key"
+instance_type = "t2.nano"
+ami           = "ami-01be94ae58414ab2e"
+key_pair_name = "ec2key"

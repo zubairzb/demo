@@ -35,7 +35,23 @@ variable "node_max_size" {
   description = "Maximum number of nodes in the EKS node group"
 }
 
+variable "node_instance_type" {
+  description = "EC2 instance type for the EKS node group"
+  type        = string
+}
+
 variable "cluster_role_arn" {
   description = "The ARN of the IAM role for the EKS cluster"
   type        = string
 }
+
+variable "fargate_pod_execution_role_arn" {
+  description = "IAM Role ARN for Fargate pod execution"
+  type        = string
+}
+
+variable "fargate_namespace" {
+  description = "Namespace for pods to run on Fargate"
+  type        = string
+}
+

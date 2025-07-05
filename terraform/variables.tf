@@ -70,6 +70,11 @@ variable "node_max_size" {
   type        = number
 }
 
+variable "node_instance_type" {
+  description = "EC2 instance type for the EKS node group"
+  type        = string
+}
+
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string

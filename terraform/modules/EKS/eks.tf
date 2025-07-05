@@ -1,4 +1,4 @@
-resource "aws_eks_cluster" "souqEKS" {
+resource "aws_eks_cluster" "demoEKS" {
   name     = var.cluster_name
   role_arn = var.cluster_role_arn
   version  = var.kubernetes_version
