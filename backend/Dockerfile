@@ -3,15 +3,11 @@ FROM node:18-slim AS builder
 
 WORKDIR /app
 
-# Copy only package files first to cache dependencies
-COPY package*.json ./
+# Copy code
+COPY . .
 
 RUN npm install
 
-# Copy rest of the code
-COPY . .
-
-# Transpile TypeScript to JavaScript
 RUN npm run build
 
 # -------- Stage 2: Production Image --------
