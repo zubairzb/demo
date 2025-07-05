@@ -32,7 +32,7 @@ module "eks" {
   node_min_size                  = var.node_min_size
   node_max_size                  = var.node_max_size
   node_instance_type             = var.node_instance_type
-  fargate_pod_execution_role_arn = module.iam.fargate_pod_execution.arn
+  fargate_pod_execution_role_arn = module.iam.fargate_role_arn
   fargate_namespace              = "demo"
 }
 

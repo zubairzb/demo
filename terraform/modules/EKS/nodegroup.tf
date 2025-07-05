@@ -1,5 +1,5 @@
-resource "aws_eks_node_group" "souq_node_group" {
-  cluster_name    = aws_eks_cluster.souqEKS.name
+resource "aws_eks_node_group" "demo_node_group" {
+  cluster_name    = aws_eks_cluster.demoEKS.name
   node_group_name = var.node_group_name
   node_role_arn   = var.node_role_arn
   subnet_ids      = var.public_subnet_ids
