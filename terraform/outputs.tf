@@ -14,7 +14,7 @@ output "eks_cluster_endpoint" {
   value = module.eks.cluster_endpoint
 }
 
-output "bastion_host_instance_id" {
+output "monogo_host_instance_id" {
   value = module.ec2.instance_id
 }
 
