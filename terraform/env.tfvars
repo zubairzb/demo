@@ -10,9 +10,9 @@ kubernetes_version  = "1.32"
 cluster_role_name   = "demo-eks-cluster"
 nodegroup_role_name = "demo-eks-nodegroup"
 node_group_name     = "demo-NodeGroup"
-node_desired_size   = 1
+node_desired_size   = 2
 node_min_size       = 1
-node_max_size       = 1
+node_max_size       = 2
 node_instance_type  = "t3.medium"
 
 instance_type = "t2.nano"
