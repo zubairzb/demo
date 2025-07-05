@@ -11,11 +11,11 @@ resource "aws_eks_node_group" "demo_node_group" {
     max_size     = var.node_max_size
   }
 
-  taint {
-    key    = "dedicated"
-    value  = "ingress"
-    effect = "NO_SCHEDULE"
-  }
+  #taint {
+  #  key    = "dedicated"
+  #  value  = "ingress"
+  #  effect = "NO_SCHEDULE"
+  #}
 
   tags = {
     Project = "Souq"
