@@ -1,30 +1,18 @@
-# -------- Stage 1: Build Stage --------
-FROM node:18-slim AS builder
-
-WORKDIR /app
-
-# Copy code
-COPY . .
-
-RUN npm install
-
-RUN npm run build
-
-# -------- Stage 2: Production Image --------
 FROM node:18-slim
 
+# Set working directory
 WORKDIR /app
 
-# Copy only compiled JS and necessary files
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package*.json ./
+# Copy package files and install dependencies
+COPY . .
+RUN npm install
 
-# Install only production dependencies
-RUN npm install --omit=dev --no-cache
+# Build TypeScript to JavaScript
+RUN npm run build
 
-# Expose app port
+# Expose the application port
 EXPOSE 5000
 
-# Default command
+# Start the application
 CMD ["node", "dist/index.js"]
 
