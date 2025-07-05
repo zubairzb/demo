@@ -26,7 +26,7 @@ This Terraform script will create the following resources:
    ```
 2. Navigate to the repository:
    ```
-   cd souqk8sinfra
+   cd demo/terraform
    ```
 3. Initialize Terraform:
    ```
