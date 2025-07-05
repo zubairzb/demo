@@ -37,4 +37,4 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          tags: 629490206392.dkr.ecr.eu-central-1.amazonaws.com/demo/backend:latest
+          tags: 629490206392.dkr.ecr.eu-central-1.amazonaws.com/demo/backend:${{ github.run_number }}
