@@ -3,7 +3,7 @@ resource "aws_eks_node_group" "demo_node_group" {
   node_group_name = var.node_group_name
   node_role_arn   = var.node_role_arn
   subnet_ids      = var.public_subnet_ids
-  instance_types = var.node_instance_type
+  instance_types  = [var.node_instance_type]
 
   scaling_config {
     desired_size = var.node_desired_size
