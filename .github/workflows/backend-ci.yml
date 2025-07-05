@@ -34,7 +34,7 @@ jobs:
       - name: Build and Push Docker image to ECR
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./backend
           file: ./backend/Dockerfile
           push: true
           tags: 629490206392.dkr.ecr.eu-central-1.amazonaws.com/demo/backend/backend:latest
