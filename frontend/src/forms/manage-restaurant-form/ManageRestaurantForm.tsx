@@ -141,16 +141,16 @@ function ManageRestaurantForm({ onSave, isLoading, restaurant }: Props) {
         onSubmit={form.handleSubmit(onsubmit)}
         className="p-10 space-y-8 rounded-lg bg-gray-50"
       >
-        <DetailsSection flex="1"/>
+        <DetailsSection />
         <Separator />
 
-        <CuisinesSection flex="1"/>
+        <CuisinesSection />
         <Separator />
 
-        <MenuSection flex="1"/>
+        <MenuSection />
         <Separator />
 
-        <ImageSection flex="1"/>
+        <ImageSection />
 
         {isLoading ? (
           <LoadingButton />
