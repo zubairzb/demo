@@ -3,7 +3,7 @@ name: Terraform Deploy
 on:
   push:
     branches:
-      - master
+      - infra
   workflow_dispatch:
 
 jobs:
