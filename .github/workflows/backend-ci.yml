@@ -9,10 +9,8 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,3 +36,23 @@ jobs:
           file: ./backend/Dockerfile
           push: true
           tags: 629490206392.dkr.ecr.eu-central-1.amazonaws.com/demo/backend:${{ github.run_number }}
+
+  Update GitOps:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Clone GitOps repo
+        uses: actions/checkout@v4
+        with:
+          repository: zubairzb/demo-gitops
+          token: ${{ secrets.PAT }}
+          path: gitops
+
+      - name: Update image tag in GitOps repo
+        run: |
+          cd gitops
+          sed -i "s/tag: .*/tag: ${{ github.run_number }}/" ./backend/values.yaml
+          git add .
+          git commit -m "Update backend image tag to ${{ github.run_number }}"
+          git push origin main
