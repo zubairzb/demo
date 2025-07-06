@@ -1,0 +1,47 @@
+name: Backend Release
+
+on:
+  push:
+    branches:
+      - release-backend
+  workflow_dispatch:
+
+jobs:
+  update-gitops-prod:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Clone GitOps repo - main branch
+        uses: actions/checkout@v4
+        with:
+          repository: zubairzb/demo-gitops
+          ref: main
+          token: ${{ secrets.PAT }}
+          path: gitops
+
+      - name: Fetch tag from staging/image-version.txt
+        id: determine-tag
+        run: |
+          TAG=$(curl -s https://raw.githubusercontent.com/zubairzb/demo-gitops/staging/image-version.txt)
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+
+      - name: Update values.yaml in GitOps main branch
+        run: |
+          cd gitops
+          TAG=${{ steps.determine-tag.outputs.tag }}
+
+          echo "Promoting tag: $TAG"
+          sed -i "s/tag: .*/tag: $TAG/" ./backend/values.yaml
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          if git diff --quiet; then
+            echo "No changes to commit."
+          else
+            git add ./backend/values.yaml
+            git commit -m "Promote backend image tag to $TAG"
+            git push origin main
+          fi
+
