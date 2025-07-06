@@ -38,6 +38,7 @@ jobs:
           tags: 629490206392.dkr.ecr.eu-central-1.amazonaws.com/demo/backend:${{ github.run_number }}
 
   Update-GitOps:
+    needs: build-and-push 
     runs-on: ubuntu-latest
     permissions:
       contents: read
