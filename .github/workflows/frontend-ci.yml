@@ -1,18 +1,22 @@
 name: Frontend CI
 
 on:
-  #push:
-    #branches:
-      #- main
+  push:
+    branches:
+      - staging-frontend
   workflow_dispatch:
+
+env:
+  IMAGE_REPO: 629490206392.dkr.ecr.eu-central-1.amazonaws.com/demo/frontend
+  IMAGE_TAG: ${{ github.run_number }}
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
-
+    outputs:
+      tag: ${{ env.IMAGE_TAG }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,12 +27,11 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.ACCESS_KEYS}}
+          aws-access-key-id: ${{ secrets.ACCESS_KEYS }}
           aws-secret-access-key: ${{ secrets.SECRET_KEYS }}
           aws-region: eu-central-1
 
       - name: Login to Amazon ECR
-        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and Push Docker image to ECR
@@ -37,28 +40,42 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
-          tags: 629490206392.dkr.ecr.eu-central-1.amazonaws.com/demo/frontend:${{ github.run_number }}
+          tags: ${{ env.IMAGE_REPO }}:${{ env.IMAGE_TAG }}
 
-  Update-GitOps:
-    needs: build-and-push 
+  update-gitops:
+    needs: [build-and-push]
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
-      - name: Clone GitOps repo
+      - name: Clone GitOps repo (staging branch)
         uses: actions/checkout@v4
         with:
           repository: zubairzb/demo-gitops
+          ref: staging
           token: ${{ secrets.PAT }}
           path: gitops
 
-      - name: Update image tag in GitOps repo
+      - name: Update values.yaml and image-version.txt
         run: |
           cd gitops
-          sed -i "s/tag: .*/tag: ${{ github.run_number }}/" ./frontend/values.yaml
-          git add .
+          TAG=${{ github.run_number }}
+          echo "Using tag: $TAG"
+
+          # Update values.yaml
+          sed -i "s/tag: .*/tag: $TAG/" ./frontend/values.yaml
+
+          # Save to image-version.txt
+          echo "$TAG" > ./frontend/image-version.txt
+
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git commit -m "Update backend image tag to ${{ github.run_number }}"
-          git push origin main
-          
+
+          if git diff --quiet; then
+            echo "No changes to commit."
+          else
+            git add ./frontend/values.yaml image-version.txt
+            git commit -m "Update frontend image tag to $TAG"
+            git push origin staging
+          fi
+
