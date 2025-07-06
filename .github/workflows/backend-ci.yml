@@ -3,8 +3,8 @@ name: Backend CI
 on:
   push:
     branches:
-      - staging
-      - main
+      - staging-backend
+      - release-backend
   workflow_dispatch:
 
 env:
@@ -13,7 +13,7 @@ env:
 
 jobs:
   build-and-push:
-    if: github.ref_name == 'staging'
+    if: github.ref_name == 'staging-backend'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -34,7 +34,6 @@ jobs:
           aws-region: eu-central-1
 
       - name: Login to Amazon ECR
-        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and Push Docker image to ECR
@@ -51,29 +50,37 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Determine GitOps branch
+        id: branch
+        run: |
+          if [[ "${{ github.ref_name }}" == "staging-backend" ]]; then
+            echo "gitops_branch=staging" >> $GITHUB_OUTPUT
+          else
+            echo "gitops_branch=main" >> $GITHUB_OUTPUT
+          fi
+
       - name: Clone GitOps repo
         uses: actions/checkout@v4
         with:
           repository: zubairzb/demo-gitops
-          ref: ${{ github.ref_name }}
+          ref: ${{ steps.branch.outputs.gitops_branch }}
           token: ${{ secrets.PAT }}
           path: gitops
 
       - name: Determine image tag
         id: determine-tag
         run: |
-          if [ "${{ github.ref_name }}" = "staging" ]; then
+          if [ "${{ github.ref_name }}" = "staging-backend" ]; then
             echo "tag=${{ github.run_number }}" >> $GITHUB_OUTPUT
           else
             TAG=$(curl -s https://raw.githubusercontent.com/zubairzb/demo-gitops/staging/image-version.txt)
             echo "tag=${TAG}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Update image tag in values.yaml
+      - name: Update image tag in GitOps repo
         run: |
           cd gitops
           TAG=${{ steps.determine-tag.outputs.tag }}
-
           echo "Using tag: $TAG"
           sed -i "s/tag: .*/tag: $TAG/" ./backend/values.yaml
           echo "$TAG" > image-version.txt
@@ -86,6 +93,6 @@ jobs:
           else
             git add ./backend/values.yaml image-version.txt
             git commit -m "Update backend image tag to $TAG"
-            git push origin ${{ github.ref_name }}
+            git push origin ${{ steps.branch.outputs.gitops_branch }}
           fi
 
