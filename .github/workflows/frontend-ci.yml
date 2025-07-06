@@ -74,7 +74,7 @@ jobs:
           if git diff --quiet; then
             echo "No changes to commit."
           else
-            git add ./frontend/values.yaml image-version.txt
+            git add ./frontend/values.yaml ./frontend/image-version.txt
             git commit -m "Update frontend image tag to $TAG"
             git push origin staging
           fi
