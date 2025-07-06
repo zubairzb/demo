@@ -1,16 +1,24 @@
 name: Backend CI
 
 on:
-  #push:
-    #branches:
-      #- main
+  push:
+    branches:
+      - staging
+      - main
   workflow_dispatch:
+
+env:
+  IMAGE_REPO: 629490206392.dkr.ecr.eu-central-1.amazonaws.com/demo/backend
+  IMAGE_TAG: ${{ github.run_number }}
 
 jobs:
   build-and-push:
+    if: github.ref_name == 'staging'
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    outputs:
+      tag: ${{ env.IMAGE_TAG }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,7 +29,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.ACCESS_KEYS}}
+          aws-access-key-id: ${{ secrets.ACCESS_KEYS }}
           aws-secret-access-key: ${{ secrets.SECRET_KEYS }}
           aws-region: eu-central-1
 
@@ -35,27 +43,49 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          tags: 629490206392.dkr.ecr.eu-central-1.amazonaws.com/demo/backend:${{ github.run_number }}
+          tags: ${{ env.IMAGE_REPO }}:${{ env.IMAGE_TAG }}
 
-  Update-GitOps:
-    needs: build-and-push 
+  update-gitops:
+    needs: [build-and-push]
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - name: Clone GitOps repo
         uses: actions/checkout@v4
         with:
           repository: zubairzb/demo-gitops
+          ref: ${{ github.ref_name }}
           token: ${{ secrets.PAT }}
           path: gitops
 
-      - name: Update image tag in GitOps repo
+      - name: Determine image tag
+        id: determine-tag
+        run: |
+          if [ "${{ github.ref_name }}" = "staging" ]; then
+            echo "tag=${{ github.run_number }}" >> $GITHUB_OUTPUT
+          else
+            TAG=$(curl -s https://raw.githubusercontent.com/zubairzb/demo-gitops/staging/image-version.txt)
+            echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update image tag in values.yaml
         run: |
           cd gitops
-          sed -i "s/tag: .*/tag: ${{ github.run_number }}/" ./backend/values.yaml
-          git add .
+          TAG=${{ steps.determine-tag.outputs.tag }}
+
+          echo "Using tag: $TAG"
+          sed -i "s/tag: .*/tag: $TAG/" ./backend/values.yaml
+          echo "$TAG" > image-version.txt
+
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git commit -m "Update backend image tag to ${{ github.run_number }}"
-          git push origin main
+
+          if git diff --quiet; then
+            echo "No changes to commit."
+          else
+            git add ./backend/values.yaml image-version.txt
+            git commit -m "Update backend image tag to $TAG"
+            git push origin ${{ github.ref_name }}
+          fi
+
