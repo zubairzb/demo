@@ -40,9 +40,9 @@ This repository contains the source code for a full-stack application built usin
 
 ### Branching Strategy
 
-- `feature/*`: Developer feature branches.
-- `staging-frontend`, `staging-backend`: Full SDLC (CI + CD) is automated here.
-- `release-frontend`, `release-backend`: GitOps updates to `main` for production; CD is manual via ArgoCD.
+- `feature/*`: Developer works on feature branches and then merge the code into staging-* branches.
+- `staging-frontend`, `staging-backend`: Full SDLC (CI + CD) is automated here. Includes auto deploy, when merged into these branches.
+- `release-frontend`, `release-backend`: GitOps updates to `main` for production; CD is manual sync via ArgoCD, as release process is always suggested in production release.
 - `infra`: Triggers Terraform workflows for infrastructure changes.
 
 ### GitHub Actions Workflows
