@@ -62,9 +62,26 @@ This repository contains the source code for a full-stack application built usin
 | Environment | Namespace     | Deployment Mode        | ArgoCD Sync Type         |
 |-------------|----------------|------------------------|--------------------------|
 | Staging     | `staging`      | Continuous Deployment  | Auto Sync                |
-| Production  | `production`   | Continuous Delivery    | Manual Trigger Required  |
+| Production  | `prod`   | Continuous Delivery/Release    | Manual Trigger Required  |
 
 Helm charts for both frontend and backend are maintained in the [GitOps Repo](https://github.com/zubairzb/demo-gitops).
+
+---
+
+## Namespaces
+
+| Name             | Purpose    |
+|------------------|------------|
+| cert-manager     | certificates provision  |
+| default          | K8s default |
+| devtools         | argo cd runs here |
+| ingress-nginx    | Nginx ingress |
+| kube-node-lease  | system     |
+| kube-public      | system     |
+| kube-system      | system     |
+| opstools         | Observability |
+| prod             | production workloads |
+| staging          | staging workloads |
 
 ---
 
