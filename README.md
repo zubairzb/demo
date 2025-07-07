@@ -6,12 +6,12 @@ This repository contains the source code for a full-stack application built usin
 
 ## Technologies Used
 
-- **Cloud Provider:** AWS (EKS, EC2, ALB, ECR)
+- **Cloud Provider:** AWS (VPC, S3, EKS, EC2, ALB, ECR)
 - **CI/CD:** GitHub Actions
 - **GitOps Delivery:** ArgoCD
 - **IaC:** Terraform
 - **Containers:** Docker
-- **Monitoring:** Grafana
+- **Monitoring:** Prometheus, Grafana
 - **Database:** MongoDB (on EC2)
 
 ---
