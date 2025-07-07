@@ -1,4 +1,4 @@
-# Cloud-Native DevOps Architecture
+# Cloud & DevOps Architecture
 
 This document presents a complete system architecture, traffic flow, and CI/CD pipeline using AWS EKS, GitHub Actions, and ArgoCD.
 
@@ -9,10 +9,10 @@ This document presents a complete system architecture, traffic flow, and CI/CD p
 ![System Architecture](./system-arch.png)
 
 This diagram shows:
-- Public access via AWS ALB
+- Public access app via AWS ALB
 - EKS hosting application workloads
 - MongoDB hosted on EC2
-- ECR integration for Docker image pulls
+- ECR for Docker image pulls
 - GitHub Actions + ArgoCD for GitOps delivery
 
 ---
@@ -26,7 +26,7 @@ This diagram shows:
 - DNS handled via **GoDaddy**
 - Requests routed through **AWS ALB**
 - Ingress managed by **NGINX**
-- Application pods communicate with MongoDB
+- Backend application pods communicate with MongoDB
 
 ---
 
@@ -34,7 +34,7 @@ This diagram shows:
 
 ![CI/CD Pipeline](./ci-cd.png)
 
-**Two Parallel Pipelines:**
+**Two Pipelines:**
 
 - **Application Delivery:**
   - Code → Docker build → ECR → GitOps Repo → ArgoCD sync
